@@ -1,0 +1,26 @@
+---
+
+- name: Add Elastic APT key
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+- name: Add Elastic APT repo
+  apt_repository:
+    repo: "deb https://artifacts.elastic.co/packages/{{ kibana_version }}.x/apt stable main"
+    filename: "elastic"
+
+- name: Install Kibana
+  apt:
+    name: kibana
+
+- name: Copy Kibana configuration
+  template:
+    src: kibana.yml.j2
+    dest: /etc/kibana/kibana.yml
+  notify: restart kibana
+
+- name: Enable and start Kibana service
+  service:
+    name: kibana
+    state: started
+    enabled: true
